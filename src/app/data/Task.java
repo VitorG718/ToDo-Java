@@ -1,0 +1,131 @@
+package app.data;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+
+import app.data.abstracts.Base;
+import app.enums.EnumStatusTask;
+import app.exceptions.InvalidTaskException;
+import app.exceptions.InvalidUserException;
+import app.utils.Util;
+import app.utils.View;
+
+public class Task extends Base {
+
+	private EnumStatusTask status;
+	private LocalDate dueDate;
+	private String notes;
+	private User assignedUser;
+	private ArrayList<User> members;
+
+	public Task(Integer id, String name, EnumStatusTask status, User assignedUser) {
+		
+		super(id, name);
+		setStatus(status);
+		setAssignedUser(assignedUser);
+		
+		members = new ArrayList<User>();
+	}
+	
+	public Task(Integer id, String name, EnumStatusTask status, LocalDate dueDate, User assignedUser) {
+			
+		this(id, name, status, assignedUser);
+		setDueDate(dueDate);
+	}
+	
+	public Task(Integer id, String name, EnumStatusTask status, String notes, User assignedUser) {
+		
+		this(id, name, status, assignedUser);
+		setNotes(notes);
+	}
+	
+	public Task(Integer id, String name, EnumStatusTask status, LocalDate dueDate, String notes, User assignedUser) {
+		
+		this(id, name, status, assignedUser);
+		setDueDate(dueDate);
+		setNotes(notes);
+	}
+
+	public EnumStatusTask getStatus() {
+		return status;
+	}
+
+	public LocalDate getDueDate() {
+		return dueDate;
+	}
+	
+	public String getNotes() {
+		if(notes == null)
+			return "";
+		return notes;
+	}
+	
+	public User getAssignedUser() {
+		return assignedUser;
+	}
+
+	public void setStatus(EnumStatusTask status) {
+		if(status != null)
+			this.status = status;
+		else
+			throw new InvalidTaskException("Status inválido");
+	}
+
+	public void setDueDate(LocalDate dueDate) {
+		LocalDate currentDate = LocalDate.now();
+		
+		if(dueDate != null && dueDate.isBefore(currentDate))
+			this.dueDate = dueDate;
+		else
+			throw new InvalidTaskException("Data de conclusão inválida");
+	}
+
+	public void setNotes(String notes) {
+		try {
+			this.notes = Util.validateString(notes);
+		} catch (IllegalArgumentException e) {
+			throw new InvalidTaskException(e.getMessage());
+		}
+	}
+
+	private void setAssignedUser(User assignedUser) {
+		if(assignedUser != null)
+			this.assignedUser = assignedUser;
+		else
+			throw new InvalidTaskException("Usuário inválido");
+	}
+	
+	public void addMember(User member) {
+		if(member != null)
+			members.add(member);
+		else
+			throw new InvalidTaskException("Colaborador inválido");
+	}
+	
+	public void removeMember(User member) {
+		if(!members.remove(member))
+			throw new InvalidTaskException("Colaborador inválido");
+	}
+	
+	public Boolean findMember(String email) {
+		for (User user : members) {
+			if(user.getEmail().equals(email))
+				return Boolean.TRUE;
+		}
+		return Boolean.FALSE;
+	}
+	
+	@Override
+	public void editName() {
+		String name = View.getString("Digite o novo nome: ", "Editar nome");
+		if(!name.isEmpty())
+			setName(name);
+		else
+			throw new InvalidUserException("Não foi possível editar o nome");
+	}
+	
+	@Override
+	public String toString() {
+		return "Nome: " + getName() + " Status: " + getStatus().getStatusName() + "\n";
+	}
+}
