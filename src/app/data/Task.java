@@ -5,8 +5,8 @@ import java.util.ArrayList;
 
 import app.data.abstracts.Base;
 import app.enums.EnumStatusTask;
+import app.exceptions.InvalidBaseException;
 import app.exceptions.InvalidTaskException;
-import app.exceptions.InvalidUserException;
 import app.utils.Util;
 import app.utils.View;
 
@@ -63,6 +63,15 @@ public class Task extends Base {
 	public User getAssignedUser() {
 		return assignedUser;
 	}
+	
+	@Override
+	public void setName(String name) {
+		try {
+			super.setName(name);
+		} catch (InvalidBaseException e) {
+			throw new InvalidTaskException(e.getMessage());
+		}
+	}
 
 	public void setStatus(EnumStatusTask status) {
 		if(status != null)
@@ -84,7 +93,7 @@ public class Task extends Base {
 		try {
 			this.notes = Util.validateString(notes);
 		} catch (IllegalArgumentException e) {
-			throw new InvalidTaskException(e.getMessage());
+			throw new InvalidTaskException("Comentário inválido");
 		}
 	}
 
@@ -121,11 +130,11 @@ public class Task extends Base {
 		if(!name.isEmpty())
 			setName(name);
 		else
-			throw new InvalidUserException("Não foi possível editar o nome");
+			throw new InvalidTaskException("Não foi possível editar o nome");
 	}
 	
 	@Override
 	public String toString() {
-		return "Nome: " + getName() + " Status: " + getStatus().getStatusName() + "\n";
+		return "ID: " + getId() + " Nome: " + getName() + " Status: " + getStatus().getStatusName() + "\n";
 	}
 }

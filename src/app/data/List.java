@@ -3,6 +3,7 @@ package app.data;
 import java.util.ArrayList;
 
 import app.data.abstracts.Base;
+import app.exceptions.InvalidBaseException;
 import app.exceptions.InvalidListException;
 import app.utils.View;
 
@@ -36,6 +37,15 @@ public class List extends Base {
 		else
 			throw new InvalidListException("Tarefa inválida");
 	}
+	
+	@Override
+	public void setName(String name) {
+		try {
+			super.setName(name);
+		} catch (InvalidBaseException e) {
+			throw new InvalidListException(e.getMessage());
+		}
+	}
 
 	@Override
 	public void editName() {
@@ -48,7 +58,7 @@ public class List extends Base {
 	
 	@Override
 	public String toString() {
-		return "Nome: " + getName();
+		return "ID: " + getId() + " Nome: " + getName();
 	}
 	
 }

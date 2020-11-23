@@ -1,11 +1,12 @@
 package app.data.abstracts;
 
+import app.exceptions.InvalidBaseException;
 import app.interfaces.Editable;
 import app.utils.Util;
 
 public abstract class Base implements Editable{
 	
-	private Long id;
+	private Integer id;
 	private String name;
 	
 	public Base(Integer id, String name) {
@@ -14,7 +15,7 @@ public abstract class Base implements Editable{
 		setName(name);
 	}
 
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
 	
@@ -27,6 +28,10 @@ public abstract class Base implements Editable{
 	}
 	
 	public void setName(String name) {
-		this.name = Util.validateName(name);
+		try {
+			this.name = Util.validateString(name);
+		} catch (IllegalArgumentException e) {
+			throw new InvalidBaseException(e.getMessage());
+		}
 	}
 }

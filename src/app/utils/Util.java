@@ -1,20 +1,85 @@
 package app.utils;
 
-public class Util {
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Random;
+
+import app.data.Task;
+import app.data.User;
+import app.main.SystemToDo;
+
+public abstract class Util {
 	
-	// TODO: implements generateId()
-	public static Long generateId() {
-		return 0L;
-	}
-	
-	// TODO: implements validateName()
-	public static String validateName(String name) {
+	public static Integer generateId() {
 		
-		return name;
+		ArrayList<Task> tasks = SystemToDo.getTasks();
+		Random generator = new Random();
+		Integer newId;
+		Boolean validId;
+		
+		do {
+			newId = generator.nextInt();
+			validId = Boolean.TRUE;
+			
+			for	(Task task: tasks) {
+				if(task.getId().equals(newId))
+					validId = Boolean.FALSE;
+			}
+			
+		} while(validId.equals(Boolean.FALSE));
+		
+		return newId;
 	}
 	
-	// TODO: implements validateString()
-	public static String validateString(String String) {
-		return String;
+	public static String validateString(String s) {
+		if(s != null && !s.trim().isEmpty())
+			return s;
+		throw new IllegalArgumentException();
+	}
+	
+	public static String validateEmail(String email) {
+		if(email == null || email.trim().isEmpty() || !email.contains("@") || email.charAt(0) == '.' || email.charAt(email.length()-1) == '.')
+			throw new IllegalArgumentException("Email inválido");
+		
+		String emailIdentifier = email.split("@")[0];
+		String emailDomain = email.split("@")[1];
+		
+		int i = 0;
+		char letter;
+		boolean validEmailIdentifier = true;
+		for (i = 0; i < emailIdentifier.length(); i++) {
+			letter = emailIdentifier.charAt(i);
+			
+			if(!Character.isLetterOrDigit(letter) && !(letter == '.')) {
+				validEmailIdentifier = false;
+				break;
+			}
+		}
+		
+		int domainsQuantity = 0;
+		boolean validEmailDomain = true;
+		for (i = 0; i < emailDomain.length(); i++) {
+			letter = emailDomain.charAt(i);
+			
+			if(letter == '.')
+				domainsQuantity++;
+			
+			if(!Character.isLetterOrDigit(letter) && !(letter == '.')) {
+				validEmailDomain = false;
+				break;
+			}
+		}
+		
+		if(!validEmailIdentifier || !validEmailDomain || domainsQuantity == 0)
+			throw new IllegalArgumentException("Email inválido");
+		
+		return email;
+	}
+	
+	public static User createUser(Map<String, String> data) {
+		return new User(
+				data.get("name"), 
+				data.get("email"), 
+				data.get("password") );
 	}
 }
