@@ -9,7 +9,7 @@ public abstract class Base implements Editable{
 	private Integer id;
 	private String name;
 	
-	public Base(Integer id, String name) {
+	public Base(String name) {
 		super();
 		setId();
 		setName(name);

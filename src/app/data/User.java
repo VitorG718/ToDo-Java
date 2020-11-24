@@ -76,7 +76,7 @@ public class User implements Editable {
 			throw new InvalidUserException("Tarefa inválida");
 	}
 	
-	public void removeTask(Long id) {
+	public void removeTask(Integer id) {
 		Task tempTask = SystemToDo.findTask(tasks, id);
 		
 		if(tempTask != null) {
@@ -90,8 +90,12 @@ public class User implements Editable {
 		StringBuilder stringTasks = new StringBuilder();
 		
 		for (Task task : tasks) {
-			if(task != null)
-				stringTasks.append(task.toString());
+			if(task != null) {
+				stringTasks
+					.append(task.toString())
+					.append("\n");
+			}
+				
 		}
 		
 		if(stringTasks.length() != 0)
@@ -101,8 +105,10 @@ public class User implements Editable {
 	
 	public String getAssignedTasks() {
 		String assignedTasks = SystemToDo.getAssingnedTasks(this);
+		
 		if(assignedTasks != null)
 			return String.valueOf(assignedTasks);
+		
 		return "Não há tarefas atribuídas";
 	}
 	
@@ -113,7 +119,7 @@ public class User implements Editable {
 			throw new InvalidUserException("Lista inválida");
 	}
 	
-	public void removeList(Long id) {
+	public void removeList(Integer id) {
 		List tempList = findList(id);
 		if(tempList == null || !lists.remove(tempList))
 			throw new InvalidUserException("Lista não encontrada");
@@ -132,7 +138,7 @@ public class User implements Editable {
 		return "Não há listas";
 	}
 	
-	public List findList(Long id) {
+	public List findList(Integer id) {
 		for (List list : lists) {
 			if(list.getId().equals(id))
 				return list;
@@ -148,5 +154,10 @@ public class User implements Editable {
 			setName(name);
 		else
 			throw new InvalidUserException("Não foi possível editar o nome");
+	}
+	
+	@Override
+	public String toString() {
+		return "Nome: " + getName() + "\nEmail: " + getEmail() + "\n\n";
 	}
 }

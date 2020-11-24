@@ -1,11 +1,15 @@
 package app.utils;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
 
+import app.data.List;
 import app.data.Task;
 import app.data.User;
+import app.enums.EnumStatusTask;
 import app.main.SystemToDo;
 
 public abstract class Util {
@@ -20,12 +24,14 @@ public abstract class Util {
 		do {
 			newId = generator.nextInt();
 			validId = Boolean.TRUE;
-			
-			for	(Task task: tasks) {
-				if(task.getId().equals(newId))
-					validId = Boolean.FALSE;
+			if(newId.compareTo(0) <= 0)
+				validId = Boolean.FALSE;
+			else {
+				for	(Task task: tasks) {
+					if(task.getId().equals(newId))
+						validId = Boolean.FALSE;
+				}
 			}
-			
 		} while(validId.equals(Boolean.FALSE));
 		
 		return newId;
@@ -81,5 +87,34 @@ public abstract class Util {
 				data.get("name"), 
 				data.get("email"), 
 				data.get("password") );
+	}
+	
+	public static Task createTask(Map<String, String> data, User assignedUser) {
+		EnumStatusTask status = null;
+		LocalDate dueDate = null;
+		
+		for (int i = 0; i < EnumStatusTask.values().length; i++) {
+			if(EnumStatusTask.values()[i].getStatusName().equals(data.get("status")))
+				status = EnumStatusTask.values()[i];
+		}
+		
+		if(!data.get("dueDate").isEmpty() && !data.get("notes").isEmpty()) {
+			dueDate = LocalDate.parse(data.get("dueDate"), DateTimeFormatter.ofPattern("dd/MM/uuuu"));
+			return new Task(data.get("name"), status, dueDate, data.get("notes"), assignedUser);
+			
+		} else if(!data.get("dueDate").isEmpty()) {
+			dueDate = LocalDate.parse(data.get("dueDate"), DateTimeFormatter.ofPattern("dd/MM/uuuu"));
+			return new Task(data.get("name"), status, dueDate, assignedUser);
+			
+		} else if(!data.get("notes").isEmpty()) {
+			dueDate = LocalDate.parse(data.get("dueDate"), DateTimeFormatter.ofPattern("dd/MM/uuuu"));
+			return new Task(data.get("name"), status, data.get("notes"), assignedUser);
+		} 
+			
+		return new Task(data.get("name"), status, assignedUser);
+	}
+	
+	public static List createList(String name) {
+		return new List(name);
 	}
 }

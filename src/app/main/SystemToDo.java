@@ -26,7 +26,7 @@ public abstract class SystemToDo {
 			throw new IllegalArgumentException("Tarefa inválida");
 	}
 	
-	public static Task findTask(Long id) {		
+	public static Task findTask(Integer id) {		
 		for (Task task : tasks) {
 			if(task.getId().equals(id))
 				return task;
@@ -34,7 +34,7 @@ public abstract class SystemToDo {
 		return null;
 	}
 	
-	public static Task findTask(ArrayList<Task> tasks, Long id) {
+	public static Task findTask(ArrayList<Task> tasks, Integer id) {
 		for (Task task : tasks) {
 			if(task.getId().equals(id))
 				return task;
@@ -51,6 +51,9 @@ public abstract class SystemToDo {
 					.append(task.toString());
 			}
 		}
+		
+		if(stringTasks.length() == 0)
+			return null;
 		
 		return String.valueOf(stringTasks);
 	}

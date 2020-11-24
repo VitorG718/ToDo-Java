@@ -11,10 +11,27 @@ public class List extends Base {
 	
 	private ArrayList<Task> tasks;
 	
-	public List(Integer id, String name) {
-		super(id, name);
+	public List(String name) {
+		super(name);
 		
 		tasks = new ArrayList<Task>();
+	}
+	
+	public String getTasks() {
+		StringBuilder stringTasks = new StringBuilder();
+		
+		for (Task task : tasks) {
+			if(task != null) {
+				stringTasks
+					.append(task.toString())
+					.append("\n");
+			}
+				
+		}
+		
+		if(stringTasks.length() != 0)
+			return String.valueOf(stringTasks);
+		return "Não há tarefas";
 	}
 	
 	public void addTask(Task task) {
@@ -24,7 +41,7 @@ public class List extends Base {
 			throw new InvalidListException("Tarefa inválida");
 	}
 	
-	public void removeTask(Long id) {
+	public void removeTask(Integer id) {
 		Task tempTask = null;
 		
 		for (Task task : tasks) {
@@ -35,7 +52,7 @@ public class List extends Base {
 		if(tempTask != null)
 			tasks.remove(tempTask);
 		else
-			throw new InvalidListException("Tarefa inválida");
+			throw new InvalidListException("Tarefa não encontrada");
 	}
 	
 	@Override

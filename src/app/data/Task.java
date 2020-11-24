@@ -1,13 +1,13 @@
 package app.data;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import app.data.abstracts.Base;
 import app.enums.EnumStatusTask;
 import app.exceptions.InvalidBaseException;
 import app.exceptions.InvalidTaskException;
-import app.utils.Util;
 import app.utils.View;
 
 public class Task extends Base {
@@ -18,30 +18,30 @@ public class Task extends Base {
 	private User assignedUser;
 	private ArrayList<User> members;
 
-	public Task(Integer id, String name, EnumStatusTask status, User assignedUser) {
+	public Task(String name, EnumStatusTask status, User assignedUser) {
 		
-		super(id, name);
+		super(name);
 		setStatus(status);
 		setAssignedUser(assignedUser);
 		
 		members = new ArrayList<User>();
 	}
 	
-	public Task(Integer id, String name, EnumStatusTask status, LocalDate dueDate, User assignedUser) {
+	public Task(String name, EnumStatusTask status, LocalDate dueDate, User assignedUser) {
 			
-		this(id, name, status, assignedUser);
+		this(name, status, assignedUser);
 		setDueDate(dueDate);
 	}
 	
-	public Task(Integer id, String name, EnumStatusTask status, String notes, User assignedUser) {
+	public Task(String name, EnumStatusTask status, String notes, User assignedUser) {
 		
-		this(id, name, status, assignedUser);
+		this(name, status, assignedUser);
 		setNotes(notes);
 	}
 	
-	public Task(Integer id, String name, EnumStatusTask status, LocalDate dueDate, String notes, User assignedUser) {
+	public Task(String name, EnumStatusTask status, LocalDate dueDate, String notes, User assignedUser) {
 		
-		this(id, name, status, assignedUser);
+		this(name, status, assignedUser);
 		setDueDate(dueDate);
 		setNotes(notes);
 	}
@@ -50,8 +50,8 @@ public class Task extends Base {
 		return status;
 	}
 
-	public LocalDate getDueDate() {
-		return dueDate;
+	public String getDueDate() {
+		return dueDate.format(DateTimeFormatter.ofPattern("dd/MM/uuuu"));
 	}
 	
 	public String getNotes() {
@@ -62,6 +62,10 @@ public class Task extends Base {
 	
 	public User getAssignedUser() {
 		return assignedUser;
+	}
+	
+	public ArrayList<User> getMembers() {
+		return members;
 	}
 	
 	@Override
@@ -82,19 +86,18 @@ public class Task extends Base {
 
 	public void setDueDate(LocalDate dueDate) {
 		LocalDate currentDate = LocalDate.now();
-		
-		if(dueDate != null && dueDate.isBefore(currentDate))
+
+		if(dueDate != null && dueDate.isAfter(currentDate))
 			this.dueDate = dueDate;
 		else
 			throw new InvalidTaskException("Data de conclusão inválida");
 	}
 
 	public void setNotes(String notes) {
-		try {
-			this.notes = Util.validateString(notes);
-		} catch (IllegalArgumentException e) {
+		if(notes != null)
+			this.notes = notes;
+		else
 			throw new InvalidTaskException("Comentário inválido");
-		}
 	}
 
 	private void setAssignedUser(User assignedUser) {
@@ -102,6 +105,13 @@ public class Task extends Base {
 			this.assignedUser = assignedUser;
 		else
 			throw new InvalidTaskException("Usuário inválido");
+	}
+	
+	public void setMembers(ArrayList<User> members) {
+		if(members != null)
+			this.members = members;
+		else
+			throw new InvalidTaskException("Colaboradores inválidos");
 	}
 	
 	public void addMember(User member) {
@@ -135,6 +145,16 @@ public class Task extends Base {
 	
 	@Override
 	public String toString() {
-		return "ID: " + getId() + " Nome: " + getName() + " Status: " + getStatus().getStatusName() + "\n";
+		String infos = "ID: " + getId() 
+			+ "\nNome: " + getName() 
+			+ "\nStatus: " + getStatus().getStatusName() + "\n";
+		
+		if(dueDate != null)
+			infos += "Data de conclusão: " + getDueDate() + "\n";
+		
+		if(notes != null && !notes.isEmpty())
+			infos += "Comentários: " + getNotes() + "\n";
+		
+		return infos;
 	}
 }
